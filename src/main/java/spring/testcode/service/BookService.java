@@ -49,7 +49,7 @@ public class BookService {
     /**
      * 책 한건
      */
-    public BookRespDto findOne(Long id){
+    public BookRespDto findById(Long id){
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new NoSuchBookItemException("존재하지 않는 책입니다."));
         return BookRespDto.toDto(book);
