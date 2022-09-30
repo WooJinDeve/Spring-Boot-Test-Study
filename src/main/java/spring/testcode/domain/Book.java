@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import spring.testcode.web.dto.BookSaveReqDto;
 
 import javax.persistence.*;
 
@@ -24,5 +25,10 @@ public class Book {
         this.id = id;
         this.title = title;
         this.author = author;
+    }
+
+    public void update(BookSaveReqDto dto) {
+        this.title = dto.getTitle();
+        this.author = dto.getAuthor();
     }
 }
