@@ -5,9 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import spring.testcode.domain.Book;
 import spring.testcode.domain.BookRepository;
+import spring.testcode.dto.response.BookListRespDto;
 import spring.testcode.exception.NoSuchBookItemException;
-import spring.testcode.dto.BookRespDto;
-import spring.testcode.dto.BookSaveReqDto;
+import spring.testcode.dto.response.BookRespDto;
+import spring.testcode.dto.request.BookSaveReqDto;
 import spring.testcode.util.MailSender;
 
 import java.util.List;
@@ -39,10 +40,12 @@ public class BookService {
     /**
      * 책 전체 목록
      */
-    public List<BookRespDto> findAll(){
-        return bookRepository.findAll().stream()
+    public BookListRespDto findAll(){
+        List<BookRespDto> bookList = bookRepository.findAll().stream()
                 .map(BookRespDto::toDto)
                 .collect(Collectors.toList());
+
+        return BookListRespDto.builder().items(bookList).build();
     }
 
 

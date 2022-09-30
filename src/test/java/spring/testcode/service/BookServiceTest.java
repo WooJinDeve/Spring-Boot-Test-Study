@@ -7,8 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import spring.testcode.domain.Book;
 import spring.testcode.domain.BookRepository;
-import spring.testcode.dto.BookRespDto;
-import spring.testcode.dto.BookSaveReqDto;
+import spring.testcode.dto.response.BookListRespDto;
+import spring.testcode.dto.response.BookRespDto;
+import spring.testcode.dto.request.BookSaveReqDto;
 import spring.testcode.exception.NoSuchBookItemException;
 import spring.testcode.util.MailSender;
 
@@ -67,14 +68,15 @@ public class BookServiceTest {
         when(bookRepository.findAll()).thenReturn(books);
 
         //when
-        List<BookRespDto> bookRespDtoList = bookService.findAll();
+        BookListRespDto bookListRespDto = bookService.findAll();
+        List<BookRespDto> bookList = bookListRespDto.getItems();
 
         //then
-        assertThat(bookRespDtoList).containsExactly(BookRespDto.toDto(book1), BookRespDto.toDto(book2));
-        assertThat(bookRespDtoList.get(0).getTitle()).isEqualTo("title1");
-        assertThat(bookRespDtoList.get(0).getAuthor()).isEqualTo("author1");
-        assertThat(bookRespDtoList.get(1).getTitle()).isEqualTo("title2");
-        assertThat(bookRespDtoList.get(1).getAuthor()).isEqualTo("author2");
+        assertThat(bookList).containsExactly(BookRespDto.toDto(book1), BookRespDto.toDto(book2));
+        assertThat(bookList.get(0).getTitle()).isEqualTo("title1");
+        assertThat(bookList.get(0).getAuthor()).isEqualTo("author1");
+        assertThat(bookList.get(1).getTitle()).isEqualTo("title2");
+        assertThat(bookList.get(1).getAuthor()).isEqualTo("author2");
     }
 
     @Test

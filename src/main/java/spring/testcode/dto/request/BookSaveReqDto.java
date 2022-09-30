@@ -1,14 +1,21 @@
-package spring.testcode.dto;
+package spring.testcode.dto.request;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import spring.testcode.domain.Book;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Data
 public class BookSaveReqDto {
+
+    @NotBlank
+    @Size(min = 1, max = 50)
     private String title;
+
+    @NotBlank
+    @Size(min = 1, max = 20)
     private String author;
 
     public Book toEntity(){

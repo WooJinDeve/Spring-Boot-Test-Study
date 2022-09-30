@@ -1,4 +1,4 @@
-package spring.testcode.dto;
+package spring.testcode.dto.response;
 
 import lombok.Data;
 import spring.testcode.domain.Book;

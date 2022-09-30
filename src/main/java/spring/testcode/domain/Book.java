@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import spring.testcode.dto.BookSaveReqDto;
+import spring.testcode.dto.request.BookSaveReqDto;
 
 import javax.persistence.*;
 
