@@ -6,8 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import spring.testcode.domain.Book;
 import spring.testcode.domain.BookRepository;
 import spring.testcode.exception.NoSuchBookItemException;
-import spring.testcode.web.dto.BookRespDto;
-import spring.testcode.web.dto.BookSaveReqDto;
+import spring.testcode.dto.BookRespDto;
+import spring.testcode.dto.BookSaveReqDto;
+import spring.testcode.util.MailSender;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final MailSender mailSender;
 
     /**
      * save : 책등록
@@ -25,6 +27,11 @@ public class BookService {
     @Transactional
     public BookRespDto save(BookSaveReqDto dto){
         Book book = bookRepository.save(dto.toEntity());
+        if (book != null){
+            if (!mailSender.sender()){
+                throw new RuntimeException("메일이 전송되지 않았습니다.");
+            }
+        }
         return BookRespDto.toDto(book);
     }
 
