@@ -1,6 +1,9 @@
 package spring.testcode.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import spring.testcode.domain.Book;
 
 @Data
