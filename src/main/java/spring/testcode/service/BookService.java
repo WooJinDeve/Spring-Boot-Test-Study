@@ -64,6 +64,8 @@ public class BookService {
      */
     @Transactional
     public void delete(Long id){
+        bookRepository.findById(id)
+                .orElseThrow(() -> new NoSuchBookItemException("존재하지 않는 책입니다."));
         bookRepository.deleteById(id);
     }
 
