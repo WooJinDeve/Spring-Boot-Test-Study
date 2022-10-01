@@ -2,7 +2,7 @@ package spring.testcode.util;
 
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class MailSendStub implements MailSender{
 
     @Override
