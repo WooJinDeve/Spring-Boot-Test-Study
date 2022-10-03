@@ -146,4 +146,14 @@ public class BookApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(success).isFalse();
     }
+
+    @Test
+    void deleteBook_test(){
+        //when
+        HttpEntity<String> request = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/1", HttpMethod.DELETE, request, String.class);
+
+        //then
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
 }
