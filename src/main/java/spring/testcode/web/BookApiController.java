@@ -57,7 +57,18 @@ public class BookApiController {
         return new ResponseEntity<>(CommonResponse.success(), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> update(){
-        return null;
+    @PutMapping("/api/v1/book/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid BookSaveReqDto bookSaveReqDto,
+                BindingResult bindingResult){
+
+        if (bindingResult.hasErrors()){
+            Map<String, String> errorMap = bindingResult.getFieldErrors()
+                    .stream()
+                    .collect(Collectors.toMap(FieldError::getField, DefaultMessageSourceResolvable::getDefaultMessage, (a, b) -> b));
+            throw new BookSaveValidateException(errorMap.toString());
+        }
+
+        BookRespDto update = bookService.update(id, bookSaveReqDto);
+        return new ResponseEntity<>(CommonResponse.success(update), HttpStatus.OK);
     }
 }

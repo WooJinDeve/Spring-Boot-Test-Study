@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
+import spring.testcode.domain.BookRepository;
 import spring.testcode.dto.request.BookSaveReqDto;
+import spring.testcode.dto.response.BookRespDto;
 import spring.testcode.service.BookService;
 
 import static org.assertj.core.api.Assertions.*;
@@ -23,6 +26,9 @@ public class BookApiControllerTest {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private BookRepository bookRepository;
 
     @Autowired
     private TestRestTemplate rt;
@@ -37,12 +43,10 @@ public class BookApiControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
     }
 
-    @BeforeEach
-    void initData(){
-        BookSaveReqDto bookSaveReqDto = new BookSaveReqDto();
-        bookSaveReqDto.setTitle("스프링");
-        bookSaveReqDto.setAuthor("저자");
-        bookService.save(bookSaveReqDto);
+
+    @AfterEach
+    void clear(){
+        bookRepository.deleteAll();
     }
 
     @Test
@@ -91,6 +95,10 @@ public class BookApiControllerTest {
     @Test
     void getBookList(){
         //given
+        BookSaveReqDto bookSaveReqDto = new BookSaveReqDto();
+        bookSaveReqDto.setTitle("스프링");
+        bookSaveReqDto.setAuthor("저자");
+        BookRespDto save = bookService.save(bookSaveReqDto);
 
         //when
         HttpEntity<String> request = new HttpEntity<>(null, headers);
@@ -111,10 +119,14 @@ public class BookApiControllerTest {
     @Test
     void getBookOne(){
         //given
+        BookSaveReqDto bookSaveReqDto = new BookSaveReqDto();
+        bookSaveReqDto.setTitle("스프링");
+        bookSaveReqDto.setAuthor("저자");
+        BookRespDto save = bookService.save(bookSaveReqDto);
 
         //when
         HttpEntity<String> request = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = rt.exchange("/api/v1/book/1", HttpMethod.GET, request, String.class);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/" + save.getId(), HttpMethod.GET, request, String.class);
 
         //then
         DocumentContext dc = JsonPath.parse(response.getBody());
@@ -128,7 +140,6 @@ public class BookApiControllerTest {
         assertThat(author).isEqualTo("저자");
     }
 
-    @Sql("classpath:db/tableInit.sql")
     @Test
     void getBookOne_exception(){
         //given
@@ -149,11 +160,38 @@ public class BookApiControllerTest {
 
     @Test
     void deleteBook_test(){
+        BookSaveReqDto bookSaveReqDto = new BookSaveReqDto();
+        bookSaveReqDto.setTitle("스프링");
+        bookSaveReqDto.setAuthor("저자");
+        BookRespDto save = bookService.save(bookSaveReqDto);
+
         //when
         HttpEntity<String> request = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = rt.exchange("/api/v1/book/1", HttpMethod.DELETE, request, String.class);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/" + save.getId(), HttpMethod.DELETE, request, String.class);
 
         //then
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+    @Test
+    void updateBook_test() throws JsonProcessingException {
+        BookSaveReqDto bookSave = new BookSaveReqDto();
+        bookSave.setTitle("스프링");
+        bookSave.setAuthor("저자");
+        BookRespDto save = bookService.save(bookSave);
+
+        //given
+        BookSaveReqDto bookSaveReqDto = new BookSaveReqDto();
+        bookSaveReqDto.setTitle("junit");
+        bookSaveReqDto.setAuthor("woojin");
+
+        //when
+        HttpEntity<String> request = new HttpEntity<>(om.writeValueAsString(bookSaveReqDto), headers);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/"+ save.getId(), HttpMethod.PUT, request, String.class);
+
+        //then
+        BookRespDto findBook = bookService.findById(save.getId());
+        assertThat(findBook.getTitle()).isEqualTo(bookSaveReqDto.getTitle());
+        assertThat(findBook.getAuthor()).isEqualTo(bookSaveReqDto.getAuthor());
     }
 }

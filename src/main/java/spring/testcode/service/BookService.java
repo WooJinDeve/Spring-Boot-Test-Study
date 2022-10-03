@@ -73,9 +73,10 @@ public class BookService {
      * 책 수정하기
      */
     @Transactional
-    public void update(Long id, BookSaveReqDto dto){
+    public BookRespDto update(Long id, BookSaveReqDto dto){
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new NoSuchBookItemException("존재하지 않는 책입니다."));
         book.update(dto);
+        return BookRespDto.toDto(book);
     }
 }
